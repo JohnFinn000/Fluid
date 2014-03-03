@@ -1,0 +1,5 @@
+2.79 1.80 0.33 0.02 0.01 0.00 0.00 // baseline
+1.80 0.86 0.26 0.02 0.01 0.00 0.00 // not counting 0 velocity
+1.83 0.77 0.35 0.01 0.00 0.00 0.00 // initializing particle
+1.83 0.67 0.26 0.01 0.00 0.00 0.00 // changing the 0 velocity setting
+1.88 0.75 0.30 0.01 0.00 0.00 0.00 // inlined some functions
