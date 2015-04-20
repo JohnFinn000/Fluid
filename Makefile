@@ -4,16 +4,16 @@ CC = g++
 CFLAGS = -Wall
 OBJDIR = obj
 
-OBJECTS = grid.o main.o
+OBJECTS = $(OBJDIR)/grid.o $(OBJDIR)/main.o
 
-grid.o: grid.cpp
-	$(CC) $(CFLAGS) -c  grid.cpp
+all: $(OBJDIR)/fluid
 
-main.o: main.cpp
-	$(CC) $(CFLAGS) -c main.cpp
+$(OBJDIR)/grid.o: grid.cpp
+	$(CC) $(CFLAGS) -c grid.cpp -o $@
 
-fluid: $(OBJECTS)
-	$(CC) $(CFLAGS) -o grid.o $(OBJECTS)
+$(OBJDIR)/main.o: main.cpp
+	$(CC) $(CFLAGS) -c main.cpp -o $@
 
-all: fluid
+$(OBJDIR)/fluid: $(OBJECTS)
+	$(CC) $(CFLAGS) -o fluid $(OBJECTS)
 

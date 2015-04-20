@@ -35,6 +35,7 @@ Particle::Particle() :
 
 Grid::Grid() {
     size = 500;
+    viscousity = VISCOUSITY;
     particle_grid = new Particle*[size];
     for( int i = 0; i < size; ++i ) {
         particle_grid[i] = new Particle[size];
@@ -49,29 +50,34 @@ Grid::Grid() {
 
 }
 
+Grid::Grid( int size, double viscousity ) {
+    this->size = size;
+    this->viscousity = viscousity;
+    particle_grid = new Particle*[size];
+    for( int i = 0; i < size; ++i ) {
+        particle_grid[i] = new Particle[size];
+    }
+}
+
 void Grid::push( int x, int y, float x_v, float y_v ) {
     if( x < size && y < size && x >= 0 && y >= 0 ) {
         particle_grid[x][y].x_velocity += x_v;
         particle_grid[x][y].y_velocity += y_v;
     }
-
 }
 
 void Grid::drop( int x, int y, float density ) {
     if( x < size && y < size && x >= 0 && y >= 0 ) {
         particle_grid[x][y].density += density;
     }
-
 }
 
 void Grid::ink( int x, int y, float R, float G, float B ) {
-    
     if( x < size && y < size && x >= 0 && y >= 0 ) {
         particle_grid[x][y].R = R;
         particle_grid[x][y].G = G;
         particle_grid[x][y].B = B;
     }
-
 }
 
 void Grid::iterate( float time ) {
@@ -86,7 +92,7 @@ void Grid::iterate( float time ) {
 
             Particle *p = &particle_grid[i][k];
 
-            if( p->x_velocity != 0 || p->y_velocity != 0 ) { 
+            //if( p->x_velocity != 0 || p->y_velocity != 0 ) { 
                 float move_x = (p->x_velocity * time);
                 float move_y = (p->y_velocity * time);
 
@@ -107,6 +113,17 @@ void Grid::iterate( float time ) {
                 y_ratio[1] = modf( new_y, &temp_y );
                 y = (int) temp_y;
                 y_ratio[0] = 1 - y_ratio[1];
+
+
+                /*
+                *-----------*
+                |       |   |
+                |       |   |
+                |       |   |
+                |-------X---|
+                |       |   |
+                *-----------*
+                */
 
                 float ratios[2][2];
                 ratios[0][0] = x_ratio[0] * y_ratio[0]; // maybe use heirustics for this instead
@@ -166,16 +183,16 @@ void Grid::iterate( float time ) {
                     
                     
                 }
-            } else {
-                new_grid[i][k].x_velocity = 0;
-                new_grid[i][k].y_velocity = 0;
-                new_grid[i][k].density    += p->density;
+            //} else { // This particle did not move
+            //    new_grid[i][k].x_velocity = 0;
+            //    new_grid[i][k].y_velocity = 0;
+            //    new_grid[i][k].density    += p->density;
 #ifdef COLOR
                 new_grid[i][k].R          += p->R;
                 new_grid[i][k].G          += p->G;
                 new_grid[i][k].B          += p->B;
 #endif
-            }
+            //}
         }
     }
 
@@ -220,12 +237,12 @@ inline void Grid::diffuse() {
     for( int i = 1; i < (size-1); ++i ) {
         for( int k = 1; k < (size-1); ++k ) {
 
-            double var = .0001;
-            float x_force = VISCOUSITY * (new_grid[i][k].density - new_grid[i+1][k].density);
+            double var = .0000001;
+            float x_force = viscousity * (new_grid[i][k].density - new_grid[i+1][k].density);
             new_grid[i][k].x_velocity   += x_force / (new_grid[i][k].density >= var ? new_grid[i][k].density : var );
             new_grid[i+1][k].x_velocity += x_force / (new_grid[i+1][k].density >= var ? new_grid[i+1][k].density : var );
 
-            float y_force = VISCOUSITY * (new_grid[i][k].density - new_grid[i][k+1].density);
+            float y_force = viscousity * (new_grid[i][k].density - new_grid[i][k+1].density);
             new_grid[i][k].y_velocity   += y_force / (new_grid[i][k].density >= var ? new_grid[i][k].density : var);
             new_grid[i][k+1].y_velocity += y_force / (new_grid[i][k+1].density >= var ? new_grid[i][k+1].density : var);
 

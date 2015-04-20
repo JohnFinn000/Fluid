@@ -5,16 +5,11 @@
  *
  *    Description:  grid for fluid dynamic simulator
  *
- *        Version:  1.0
- *        Created:  04/05/2013 01:05:59 PM
- *       Revision:  none
- *       Compiler:  gcc
- *
- *         Author:  John Finn (), johnvincentfinn@gmail.com
- *   Organization:  
- *
  * =====================================================================================
  */
+
+#ifndef __GRID_H__
+#define __GRID_H__
 
 #define VISCOUSITY .001
 
@@ -37,9 +32,15 @@ private:
     Particle **new_grid;
 public:
     int size;
+    double viscousity;
     Particle **particle_grid;
 
+    float max_density;
+    float min_density;
+    float average_density; 
+
     Grid();
+    Grid( int size, double viscousity );
 
     void push( int x, int y, float x_v, float y_v );
     void drop( int x, int y, float density );
@@ -51,4 +52,6 @@ public:
     void display();
 
 };
+
+#endif
 
